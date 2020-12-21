@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="91px" height="89px" viewBox="0 0 91 89" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>enterFullscreen</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Group-2" transform="translate(6.000000, 6.000000)" stroke="#FFFFFF" stroke-width="12">
+            <g id="Group" transform="translate(-0.000000, 0.000000)">
+                <line x1="27.5185185" y1="0.518518519" x2="1.51851852" y2="0.518518519" id="Line"></line>
+                <line x1="14.5185185" y1="15" x2="-13.4814815" y2="15" id="Line" transform="translate(0.518519, 15.000000) rotate(90.000000) translate(-0.518519, -15.000000) "></line>
+            </g>
+            <g id="Group" transform="translate(65.500000, 63.000000) scale(-1, -1) rotate(-360.000000) translate(-65.500000, -63.000000) translate(52.000000, 49.000000)">
+                <line x1="26.5178571" y1="0.5" x2="0.482142857" y2="0.5" id="Line"></line>
+                <line x1="14" y1="14.5" x2="-13" y2="14.5" id="Line" transform="translate(0.500000, 14.500000) rotate(90.000000) translate(-0.500000, -14.500000) "></line>
+            </g>
+        </g>
+    </g>
+</svg>

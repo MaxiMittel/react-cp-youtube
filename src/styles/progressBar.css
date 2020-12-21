@@ -1,0 +1,22 @@
+.custom-youtube-player-progress-bar-outer{
+    height: 5px;
+    background-color: #909090;
+    position: relative;
+    border-radius: 5px;
+}
+
+.custom-youtube-player-progress-bar-inner{
+    height: 5px;
+    background-color: #e91e63;
+    border-radius: 5px;
+}
+
+.custom-youtube-player-progress-bar-knob{
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    position: absolute;
+    top: -6px;
+    background-color: white;
+    cursor: pointer;
+}

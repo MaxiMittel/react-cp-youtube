@@ -1,0 +1,47 @@
+{
+  "name": "react-cp-youtube",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "start": "rollup -c -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaxiMittel/react-cp-youtube.git"
+  },
+  "keywords": [
+    "youtube"
+  ],
+  "author": "Maximilian Mittelhammer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MaxiMittel/react-cp-youtube/issues"
+  },
+  "homepage": "https://github.com/MaxiMittel/react-cp-youtube#readme",
+  "peerDependencies": {
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-image": "^2.0.6",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "babel-core": "^6.26.3",
+    "babel-runtime": "^6.26.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "rollup": "^2.35.1",
+    "rollup-plugin-css-only": "^3.1.0",
+    "rollup-plugin-typescript2": "^0.29.0",
+    "typescript": "^4.1.3"
+  },
+  "dependencies": {
+    "react-full-screen": "^0.3.2-0",
+    "react-youtube": "^7.13.0"
+  }
+}
