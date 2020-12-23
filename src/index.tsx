@@ -36,7 +36,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   const [volume, setVolume] = useState(100);
   const [formatedTime, setFormatedTime] = useState("0:00 / 0:00");
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(props.playing);
   const [showControls, setShowControls] = useState(true);
   const [hoverControls, setHoverControls] = useState(false);
   const timeoutRef = useRef<any>(null);
@@ -144,9 +144,9 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
       if (state) {
-        youtubePlayer.pauseVideo();
-      } else {
         youtubePlayer.playVideo();
+      } else {
+        youtubePlayer.pauseVideo();
       }
     }
   };
@@ -161,9 +161,13 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
 
   //################## Time related functions ##################
 
-  const handleTimeChange = (val: number) => {
+  const handleTimeChange = async (val: number) => {
     handleTimeInput(val);
-    props.onTimeChange(val);
+    if (player !== null) {
+      var youtubePlayer = (player as any).internalPlayer;
+      var duration = await youtubePlayer.getDuration();
+      props.onTimeChange((val / 100) * duration);
+    }
   };
 
   const handleTimeInput = async (val: number) => {
