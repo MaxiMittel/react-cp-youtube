@@ -38,7 +38,7 @@ npm i react-cp-youtube
 
 ```tsx
 import VideoPlayer from "react-cp-youtube";
-import '../node_modules/react-cp-youtube/dist/bundle.css';
+import 'react-cp-youtube/dist/bundle.css';
 
 ...
 <VideoPlayer
