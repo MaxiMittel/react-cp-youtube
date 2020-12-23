@@ -24,6 +24,8 @@ This React component wraps custom controls around a YouTube video for better inf
 
 ## Preview
 
+![preview](preview.png)
+
 ## Install
 
 ```sh
@@ -34,7 +36,6 @@ npm i react-cp-youtube
 
 ## Usage
 
-
 ```tsx
 import VideoPlayer from "react-cp-youtube";
 import '../node_modules/react-cp-youtube/dist/bundle.css';
@@ -44,18 +45,32 @@ import '../node_modules/react-cp-youtube/dist/bundle.css';
   playing={boolean}
   time={number}
   rate={number}
+  videoId={string}
   onPlaybackRateChange={(rate: number) => void}
   onVideoFinished={() => void}
   onTimeChange={(time: number) => void}
-  videoId={string}
   onPlay={() => void}
   onPause={() => void}
 />
 ```
+
 <!-- CONTRIBUTING -->
 
 ## Props
 
+Changing `playing`, `time`, `rate` or `videoId` will result in the player changing those attributes. E.g Changing `time` will result in the player skipping to the provided second.
+
+| name                   | type                     | description                                                                                            |
+| ---------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `playing`              | `boolean`                | Changes the video state to either playing or paused.                                                   |
+| `time`                 | `number`                 | Sets the time in seconds.                                                                              |
+| `rate`                 | `number`                 | Sets the playback rate of the video.                                                                   |
+| `videoId`              | `string`                 | Sets the id of the video currently played.                                                             |
+| `onPlaybackRateChange` | `(rate: number) => void` | Is triggered when the user changes the playback rate. (Coming soon)                                    |
+| `onVideoFinished`      | `() => void`             | Is triggered when the current video finished playing.                                                  |
+| `onTimeChange`         | `(time: number) => void` | Is triggered when the user changes the time of the video.                                              |
+| `onPlay`               | `() => void`             | Is triggered when the user resumes the video. (NOTE: A time change will trigger `onPlay` or `onPause`) |
+| `onPause`              | `() => void`             | Is triggered when the user pauses the video. (NOTE: A time change will trigger `onPlay` or `onPause`)  |
 
 <!-- CONTRIBUTING -->
 
