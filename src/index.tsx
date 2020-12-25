@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from "react";
 import "./styles/videoPlayer.css";
 import { ToggleButton } from "./ToggleButton";
 import {
@@ -14,7 +14,10 @@ import playButton from "./icons/playButton.svg";
 import pauseButton from "./icons/pauseButton.svg";
 import enterFullscreen from "./icons/enterFullscreen.svg";
 import leaveFullscreen from "./icons/leaveFullscreen.svg";
-
+import i_changeQuality from "./icons/changeQuality.svg";
+import i_changeQualitySolid from "./icons/changeQualitySolid.svg";
+import i_changePlaybackrate from "./icons/changePlaybackrate.svg";
+import i_changePlaybackrateSolid from "./icons/changePlaybackrateSolid.svg";
 
 interface Props {
   videoId: string;
@@ -39,48 +42,54 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   const [isPlaying, setIsPlaying] = useState(props.playing);
   const [showControls, setShowControls] = useState(true);
   const [hoverControls, setHoverControls] = useState(false);
+  const [showPlaybackRateOptions, setShowPlaybackRateOptions] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1.0);
+  const [showQualityOptions, setShowQualityOptions] = useState(false);
+  const [qualityLevels, setQualityLevels] = useState([
+    "tiny",
+    "medium",
+    "large",
+  ]);
   const timeoutRef = useRef<any>(null);
-
 
   //################## Handle prop changes ##################
 
   /**
    * Handle videoid change
    */
-  useEffect(() =>{
-    if (player !== null){
+  useEffect(() => {
+    if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
       youtubePlayer.cueVideoById(props.videoId);
     }
-  },[props.videoId])
+  }, [props.videoId]);
 
   /**
    * Handle time change
    */
-  useEffect(() =>{
-    if (player !== null){
+  useEffect(() => {
+    if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
       youtubePlayer.seekTo(props.time);
     }
-  },[props.time])
+  }, [props.time]);
 
   /**
    * Handle playing change
    */
-  useEffect(() =>{
+  useEffect(() => {
     togglePlay(props.playing);
-  },[props.playing])
+  }, [props.playing]);
 
   /**
    * Handle playback rate change
    */
-  useEffect(() =>{
-    if (player !== null){
+  useEffect(() => {
+    if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
       youtubePlayer.setPlaybackRate(props.rate);
     }
-  },[props.rate])
-
+  }, [props.rate]);
 
   //################## Handle keyboard input ##################
 
@@ -112,7 +121,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
       if (currentTime + 5 < duration) {
         youtubePlayer.seekTo(currentTime + 5);
       } else {
-        youtubePlayer.seekTo(duration - .1);
+        youtubePlayer.seekTo(duration - 0.1);
       }
     }
   };
@@ -127,7 +136,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
       if (currentTime - 5 > 0) {
         youtubePlayer.seekTo(currentTime - 5);
       } else {
-        youtubePlayer.seekTo(.1);
+        youtubePlayer.seekTo(0.1);
       }
     }
   };
@@ -276,6 +285,102 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
     let playBackRate = await youtubePlayer.getPlaybackRate();
 
     props.onPlaybackRateChange(playBackRate);
+    setPlaybackRate(playBackRate);
+  };
+
+  const changePlaybackRate = (rate: number) => {
+    if (player !== null) {
+      var youtubePlayer = (player as any).internalPlayer;
+      youtubePlayer.setPlaybackRate(rate);
+    }
+    setPlaybackRate(rate);
+    setShowPlaybackRateOptions(false);
+  };
+
+  const playbackRateOptions = () => {
+    return (
+      <div className="control-options">
+        <h2>Speed</h2>
+        <ul>
+          <li
+            onClick={() => changePlaybackRate(0.25)}
+            style={{ fontWeight: playbackRate == 0.25 ? "bold" : "initial" }}
+          >
+            0.25
+          </li>
+          <li
+            onClick={() => changePlaybackRate(0.5)}
+            style={{ fontWeight: playbackRate == 0.5 ? "bold" : "initial" }}
+          >
+            0.5
+          </li>
+          <li
+            onClick={() => changePlaybackRate(0.75)}
+            style={{ fontWeight: playbackRate == 0.75 ? "bold" : "initial" }}
+          >
+            0.75
+          </li>
+          <li
+            onClick={() => changePlaybackRate(1.0)}
+            style={{ fontWeight: playbackRate == 1.0 ? "bold" : "initial" }}
+          >
+            Standard
+          </li>
+          <li
+            onClick={() => changePlaybackRate(1.25)}
+            style={{ fontWeight: playbackRate == 1.25 ? "bold" : "initial" }}
+          >
+            1.25
+          </li>
+          <li
+            onClick={() => changePlaybackRate(1.5)}
+            style={{ fontWeight: playbackRate == 1.5 ? "bold" : "initial" }}
+          >
+            1.5
+          </li>
+          <li
+            onClick={() => changePlaybackRate(2.0)}
+            style={{ fontWeight: playbackRate == 2.0 ? "bold" : "initial" }}
+          >
+            2
+          </li>
+        </ul>
+      </div>
+    );
+  };
+
+  const changeQuality = (quality: string) => {
+    if (player !== null) {
+      var youtubePlayer = (player as any).internalPlayer;
+      youtubePlayer.setPlaybackQuality(quality);
+    }
+    setShowQualityOptions(false);
+  };
+
+  const requestQualityLevels = async () => {
+    if (player !== null) {
+      var youtubePlayer = (player as any).internalPlayer;
+      let ql = await youtubePlayer.getAvailableQualityLevels();
+      setQualityLevels(ql);
+    }
+  };
+
+  const qualityOptions = () => {
+    requestQualityLevels();
+    return (
+      <div className="control-options">
+        <h2>Quality</h2>
+        <ul>
+          {qualityLevels.map(function (level: string, i: number) {
+            return (
+              <li onClick={() => changeQuality(level)} key={i}>
+                {level}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
   };
 
   const opts: Options = {
@@ -314,6 +419,10 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
+            <div className="controlRow0">
+              {showPlaybackRateOptions && playbackRateOptions()}
+              {showQualityOptions && qualityOptions()}
+            </div>
             <div className="controlRow1">
               <VideoProgress
                 value={time}
@@ -350,6 +459,36 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
               </div>
               <span className="timeInfo">{formatedTime}</span>
               <div style={{ float: "right" }}>
+                <ToggleButton
+                  style={{ marginRight: "1em" }}
+                  onToggle={(s: boolean) => {
+                    if (s) {
+                      setShowQualityOptions(false);
+                      setShowPlaybackRateOptions(true);
+                    } else {
+                      setShowQualityOptions(false);
+                      setShowPlaybackRateOptions(false);
+                    }
+                  }}
+                  onImage={i_changePlaybackrateSolid}
+                  offImage={i_changePlaybackrate}
+                  value={showPlaybackRateOptions}
+                />
+                <ToggleButton
+                  style={{ marginRight: "1em" }}
+                  onToggle={(s: boolean) => {
+                    if (s) {
+                      setShowPlaybackRateOptions(false);
+                      setShowQualityOptions(true);
+                    } else {
+                      setShowPlaybackRateOptions(false);
+                      setShowQualityOptions(false);
+                    }
+                  }}
+                  onImage={i_changeQualitySolid}
+                  offImage={i_changeQuality}
+                  value={showQualityOptions}
+                />
                 <ToggleButton
                   style={{}}
                   onToggle={(s: boolean) => {

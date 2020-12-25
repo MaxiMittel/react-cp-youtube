@@ -54,6 +54,10 @@
   z-index: 5000;
 }
 
+.controlRow0{
+  text-align: right;
+}
+
 .controlRow2 {
   box-sizing: border-box;
   padding-bottom: 0.5em;
@@ -67,4 +71,41 @@
   font-size: 1em;
   color: white;
   font-weight: bold;
+}
+
+.control-options{
+  background-color: rgba(0,0,0,0.5);
+  backdrop-filter: blur(5px);
+  display: inline-block;
+  text-align: right;
+  border-radius: 5px;
+  min-width: 100px;
+  padding: 1em;
+}
+
+.control-options h2{
+  margin: 0;
+  font-size: 1em;
+  padding-bottom: 0.5em;
+  border-bottom: .5px solid #7b7b7b;
+  text-align: left;
+}
+
+.control-options ul{
+  list-style: none;
+  padding: 0;
+  margin: 0.2em;
+}
+
+.control-options li{
+  padding: 0.4em;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
+  margin-bottom: 0.2em;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.control-options li:hover{
+  background-color: rgba(255,255,255,0.2);
 }

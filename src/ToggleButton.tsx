@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import "./styles/toggleButton.css";
 
 
@@ -14,9 +14,14 @@ interface Props {
 export const ToggleButton: React.FC<Props> = (props: Props) => {
   const [state, setState] = useState(props.value);
 
+  useEffect(() => {
+    setState(props.value);
+  }, [props.value]);
+
   const toggle = () => {
-    setState(!state);
-    props.onToggle(state);
+    let newState = !state;
+    setState(newState);
+    props.onToggle(newState);
   };
 
   return (
