@@ -46,11 +46,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   const [showPlaybackRateOptions, setShowPlaybackRateOptions] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [showQualityOptions, setShowQualityOptions] = useState(false);
-  const [qualityLevels, setQualityLevels] = useState([
-    "tiny",
-    "medium",
-    "large",
-  ]);
+  const [qualityLevels, setQualityLevels] = useState(["-"]);
   const timeoutRef = useRef<any>(null);
 
   //################## Handle prop changes ##################
@@ -61,7 +57,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
-      youtubePlayer.cueVideoById(props.videoId);
+      youtubePlayer.cueVideoById(props.videoId, props.time);
     }
   }, [props.videoId]);
 
@@ -119,11 +115,15 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
       var youtubePlayer = (player as any).internalPlayer;
       var currentTime = await youtubePlayer.getCurrentTime();
       var duration = await youtubePlayer.getDuration();
+      let newTime = currentTime;
       if (currentTime + 5 < duration) {
-        youtubePlayer.seekTo(currentTime + 5);
+        newTime = currentTime + 5;
       } else {
-        youtubePlayer.seekTo(duration - 0.1);
+        newTime = duration - 0.1;
       }
+      youtubePlayer.seekTo(newTime);
+      props.onTimeChange(newTime);
+      props.onTimeUpdate(newTime);
     }
   };
 
@@ -134,11 +134,15 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
       var currentTime = await youtubePlayer.getCurrentTime();
+      let newTime = currentTime;
       if (currentTime - 5 > 0) {
-        youtubePlayer.seekTo(currentTime - 5);
+        newTime = currentTime - 5;
       } else {
-        youtubePlayer.seekTo(0.1);
+        newTime = 0.1;
       }
+      youtubePlayer.seekTo(newTime);
+      props.onTimeChange(newTime);
+      props.onTimeUpdate(newTime);
     }
   };
 
@@ -272,11 +276,13 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   };
 
   const _onPlay = () => {
+    setShowControls(true);
     setIsPlaying(true);
     props.onPlay();
   };
 
   const _onPause = () => {
+    setShowControls(true);
     setIsPlaying(false);
     props.onPause();
   };
@@ -302,6 +308,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   };
 
   const playbackRateOptions = () => {
+    //TODO: Use map
     return (
       <div className="control-options">
         <h2>Speed</h2>
