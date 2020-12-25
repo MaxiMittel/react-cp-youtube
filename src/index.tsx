@@ -25,6 +25,7 @@ interface Props {
   time: number;
   rate: number;
   onTimeChange: (time: number) => void;
+  onTimeUpdate: (time: number) => void;
   onPlaybackRateChange: (rate: number) => void;
   onVideoFinished: () => void;
   onPlay: () => void;
@@ -175,7 +176,9 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
       var duration = await youtubePlayer.getDuration();
-      props.onTimeChange((val / 100) * duration);
+      let newTime = (val / 100) * duration;
+      props.onTimeChange(newTime);
+      props.onTimeUpdate(newTime);
     }
   };
 
@@ -196,6 +199,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
         var duration = await youtubePlayer.getDuration();
         setTime((currentTime / duration) * 100);
         setFormatedTime(formatTime(currentTime) + " / " + formatTime(duration));
+        props.onTimeUpdate(currentTime);
       }
     }, 500);
     return () => clearInterval(interval);

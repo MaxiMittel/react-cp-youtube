@@ -1,7 +1,7 @@
 {
   "name": "react-cp-youtube",
-  "version": "0.2.0",
-  "description": "",
+  "version": "0.2.1",
+  "description": "YouTube player with custom controls implemented in React.",
   "main": "dist/index.js",
   "files": [
     "dist"
