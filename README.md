@@ -69,6 +69,7 @@ Changing `playing`, `time`, `rate` or `videoId` will result in the player changi
 | `onPlaybackRateChange` | `(rate: number) => void` | Is triggered when the user changes the playback rate. (Coming soon)                                    |
 | `onVideoFinished`      | `() => void`             | Is triggered when the current video finished playing.                                                  |
 | `onTimeChange`         | `(time: number) => void` | Is triggered when the user changes the time of the video.                                              |
+| `onTimeUpdate`         | `(time: number) => void` | Called every `500ms` passes current time as parameter                                                  |
 | `onPlay`               | `() => void`             | Is triggered when the user resumes the video. (NOTE: A time change will trigger `onPlay` or `onPause`) |
 | `onPause`              | `() => void`             | Is triggered when the user pauses the video. (NOTE: A time change will trigger `onPlay` or `onPause`)  |
 

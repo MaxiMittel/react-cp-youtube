@@ -18,6 +18,7 @@ import i_changeQuality from "./icons/changeQuality.svg";
 import i_changeQualitySolid from "./icons/changeQualitySolid.svg";
 import i_changePlaybackrate from "./icons/changePlaybackrate.svg";
 import i_changePlaybackrateSolid from "./icons/changePlaybackrateSolid.svg";
+import useWindowSize from "./windowSize";
 
 interface Props {
   videoId: string;
@@ -47,7 +48,21 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [showQualityOptions, setShowQualityOptions] = useState(false);
   const [qualityLevels, setQualityLevels] = useState(["-"]);
+  const [fullScreenMargin, setFullScreenMargin] = useState(0);
   const timeoutRef = useRef<any>(null);
+  const size = useWindowSize();
+
+  useEffect(() => {
+    if(isFullscreen){
+      let availWidth = size.width;
+      let availHeight = size.height;
+      let videoHeight = (availWidth / 16) * 9;
+      let mgTop = (availHeight - videoHeight) / 2;
+      setFullScreenMargin(mgTop);
+    }else{
+      setFullScreenMargin(0);
+    }
+  }, [size]);
 
   //################## Handle prop changes ##################
 
@@ -212,6 +227,16 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   //################## Handle fullscreen change ##################
 
   const fullscreenChanged = (state: boolean, _: FullScreenHandle) => {
+    if(state){
+      let availWidth = size.width;
+      let availHeight = size.height;
+      let videoHeight = (availWidth / 16) * 9;
+      let mgTop = (availHeight - videoHeight) / 2;
+      setFullScreenMargin(mgTop);
+    }else{
+      setFullScreenMargin(0);
+    }
+
     setIsFullscreen(state);
   };
 
@@ -413,7 +438,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
     <FullScreen handle={handle} onChange={fullscreenChanged}>
       <div className="videoPlayer">
         {MoveDetectors()}
-        <div className="video-container">
+        <div className="video-container" style={{marginTop: fullScreenMargin}}>
           <YouTube
             videoId={props.videoId}
             opts={opts}
@@ -504,9 +529,9 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
                   style={{}}
                   onToggle={(s: boolean) => {
                     if (s) {
-                      handle.exit();
-                    } else {
                       handle.enter();
+                    } else {
+                      handle.exit();
                     }
                   }}
                   onImage={leaveFullscreen}

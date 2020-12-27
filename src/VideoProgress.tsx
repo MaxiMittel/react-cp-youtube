@@ -15,14 +15,24 @@ export const VideoProgress: React.FC<Props> = (props: Props) => {
   const outer_div = React.useRef<HTMLDivElement>(null);
   const _mouse_pressed = useRef(false);
 
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    event.preventDefault();
+
+    handleMove(event.changedTouches[0].pageX);
+  }
+
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
 
+    handleMove(event.pageX);
+  }
+    
+  const handleMove = (pgX: number) => {
     if (_mouse_pressed.current) {
       var bounds = outer_div.current?.getBoundingClientRect();
       if (bounds) {
         var max = bounds.width;
-        var pos = event.pageX - bounds.left;
+        var pos = pgX - bounds.left;
         var percentage = Math.round((pos / max) * 100);
         if (percentage > 100) percentage = 100;
         if (percentage < 0) percentage = 0;
@@ -32,13 +42,13 @@ export const VideoProgress: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>|React.TouchEvent<HTMLDivElement>) => {
     event.preventDefault();
 
     _mouse_pressed.current = true;
   };
 
-  const handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseUp = (event: React.MouseEvent<HTMLDivElement>|React.TouchEvent<HTMLDivElement>) => {
     event.preventDefault();
 
     _mouse_pressed.current = false;
@@ -79,8 +89,11 @@ export const VideoProgress: React.FC<Props> = (props: Props) => {
       <div
         className="custom-youtube-player-progress-bar-outer"
         onMouseMove={handleMouseMove}
+        onTouchMove={handleTouchMove}
         onMouseDown={handleMouseDown}
+        onTouchStart={handleMouseDown}
         onMouseUp={handleMouseUp}
+        onTouchEnd={handleMouseUp}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
         ref={outer_div}

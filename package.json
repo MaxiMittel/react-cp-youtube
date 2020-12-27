@@ -1,6 +1,6 @@
 {
   "name": "react-cp-youtube",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "YouTube player with custom controls implemented in React.",
   "main": "dist/index.js",
   "files": [
@@ -15,7 +15,13 @@
     "url": "git+https://github.com/MaxiMittel/react-cp-youtube.git"
   },
   "keywords": [
-    "youtube"
+    "youtube",
+    "player",
+    "custom",
+    "controls",
+    "yt player",
+    "yt",
+    "iframe"
   ],
   "author": "Maximilian Mittelhammer",
   "license": "MIT",
