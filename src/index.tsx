@@ -7,8 +7,9 @@ import {
   useFullScreenHandle,
   FullScreenHandle,
 } from "react-full-screen";
-import YouTube, { Options } from "react-youtube";
+import YouTube, { Options, PlayerVars } from "react-youtube";
 import { VideoProgress } from "./VideoProgress";
+import useWindowSize from "./windowSize";
 
 import playButton from "./icons/playButton.svg";
 import pauseButton from "./icons/pauseButton.svg";
@@ -18,30 +19,62 @@ import i_changeQuality from "./icons/changeQuality.svg";
 import i_changeQualitySolid from "./icons/changeQualitySolid.svg";
 import i_changePlaybackrate from "./icons/changePlaybackrate.svg";
 import i_changePlaybackrateSolid from "./icons/changePlaybackrateSolid.svg";
-import useWindowSize from "./windowSize";
 
-interface Props {
+interface VideoPlayerProps {
   videoId: string;
-  playing: boolean;
-  time: number;
-  rate: number;
-  onTimeChange: (time: number) => void;
-  onTimeUpdate: (time: number) => void;
-  onPlaybackRateChange: (rate: number) => void;
-  onVideoFinished: () => void;
-  onPlay: () => void;
-  onPause: () => void;
+  options?: YouTubeOptions;
+  playing?: boolean;
+  time?: number;
+  rate?: number;
+  disableKb?: boolean;
+  onTimeChange?: (time: number) => void;
+  onTimeUpdate?: (time: number) => void;
+  onPlaybackRateChange?: (rate: number) => void;
+  onPlay?: () => void;
+  onPause?: () => void;
+  ytRef?: (ref: YouTubeRef) => void;
+  onReady?: () => void;
+  onVideoFinished?: () => void;
+  onEnd?: () => void;
+  onError?: (error: number) => void;
+  onPlaybackQualityChange?: (quality: string) => void;
+  onStateChange?: (state: any) => void;
 }
 
-let player: YouTube | null;
+type YouTubeRef = YouTube | null;
 
-const VideoPlayer: React.FC<Props> = (props: Props) => {
+type YouTubeOptions = {
+  autoplay?: PlayerVars["autoplay"];
+  cc_load_policy?: PlayerVars["cc_load_policy"];
+  color?: PlayerVars["color"];
+  controls?: PlayerVars["controls"];
+  disablekb?: PlayerVars["disablekb"];
+  enablejsapi?: PlayerVars["enablejsapi"];
+  end?: PlayerVars["end"];
+  fs?: PlayerVars["fs"];
+  hl?: PlayerVars["hl"];
+  iv_load_policy?: PlayerVars["iv_load_policy"];
+  list?: PlayerVars["list"];
+  listType?: PlayerVars["listType"];
+  loop?: PlayerVars["loop"];
+  modestbranding?: PlayerVars["modestbranding"];
+  origin?: PlayerVars["origin"];
+  playlist?: PlayerVars["playlist"];
+  playsinline?: PlayerVars["playsinline"];
+  rel?: PlayerVars["rel"];
+  showinfo?: PlayerVars["showinfo"];
+  start?: PlayerVars["start"];
+};
+
+let player: YouTubeRef;
+
+const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   const handle = useFullScreenHandle();
   const [time, setTime] = useState(0);
   const [volume, setVolume] = useState(100);
   const [formatedTime, setFormatedTime] = useState("0:00 / 0:00");
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(props.playing);
+  const [isPlaying, setIsPlaying] = useState(props.playing || true);
   const [showControls, setShowControls] = useState(true);
   const [hoverControls, setHoverControls] = useState(false);
   const [showPlaybackRateOptions, setShowPlaybackRateOptions] = useState(false);
@@ -53,13 +86,13 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   const size = useWindowSize();
 
   useEffect(() => {
-    if(isFullscreen){
+    if (isFullscreen) {
       let availWidth = size.width;
       let availHeight = size.height;
       let videoHeight = (availWidth / 16) * 9;
       let mgTop = (availHeight - videoHeight) / 2;
       setFullScreenMargin(mgTop);
-    }else{
+    } else {
       setFullScreenMargin(0);
     }
   }, [size]);
@@ -72,25 +105,40 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
-      youtubePlayer.cueVideoById(props.videoId, props.time);
+      youtubePlayer.cueVideoById(props.videoId, props.time || 0);
     }
   }, [props.videoId]);
+
+  const seekTime = async (time: number) =>{
+    if (player !== null) {
+      var youtubePlayer = (player as any).internalPlayer;
+      var duration = await youtubePlayer.getDuration();
+      let newTime = time;
+
+      if(newTime > duration){
+        newTime = duration;
+      }else if(newTime < 0){
+        newTime = 0;
+      }
+
+      youtubePlayer.seekTo(newTime);
+      return newTime;
+    }
+    return 0;
+  }
 
   /**
    * Handle time change
    */
   useEffect(() => {
-    if (player !== null) {
-      var youtubePlayer = (player as any).internalPlayer;
-      youtubePlayer.seekTo(props.time);
-    }
+    seekTime(props.time || 0);
   }, [props.time]);
 
   /**
    * Handle playing change
    */
   useEffect(() => {
-    togglePlay(props.playing);
+    togglePlay(props.playing || true);
   }, [props.playing]);
 
   /**
@@ -99,7 +147,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
-      youtubePlayer.setPlaybackRate(props.rate);
+      youtubePlayer.setPlaybackRate(props.rate || 1);
     }
   }, [props.rate]);
 
@@ -107,6 +155,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
 
   //TODO: Correct type
   const keyboardEvents = (event: any) => {
+    if(props.disableKb === true) return;
     switch (event.code) {
       case "Space":
         togglePlay(!isPlaying);
@@ -129,16 +178,9 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
       var currentTime = await youtubePlayer.getCurrentTime();
-      var duration = await youtubePlayer.getDuration();
-      let newTime = currentTime;
-      if (currentTime + 5 < duration) {
-        newTime = currentTime + 5;
-      } else {
-        newTime = duration - 0.1;
-      }
-      youtubePlayer.seekTo(newTime);
-      props.onTimeChange(newTime);
-      props.onTimeUpdate(newTime);
+      let newTime = await seekTime(currentTime + 10);
+      if (props.onTimeChange) props.onTimeChange(newTime);
+      if (props.onTimeUpdate) props.onTimeUpdate(newTime);
     }
   };
 
@@ -149,15 +191,9 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
       var currentTime = await youtubePlayer.getCurrentTime();
-      let newTime = currentTime;
-      if (currentTime - 5 > 0) {
-        newTime = currentTime - 5;
-      } else {
-        newTime = 0.1;
-      }
-      youtubePlayer.seekTo(newTime);
-      props.onTimeChange(newTime);
-      props.onTimeUpdate(newTime);
+      let newTime = await seekTime(currentTime - 10);
+      if (props.onTimeChange) props.onTimeChange(newTime);
+      if (props.onTimeUpdate) props.onTimeUpdate(newTime);
     }
   };
 
@@ -196,8 +232,8 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
       var youtubePlayer = (player as any).internalPlayer;
       var duration = await youtubePlayer.getDuration();
       let newTime = (val / 100) * duration;
-      props.onTimeChange(newTime);
-      props.onTimeUpdate(newTime);
+      if (props.onTimeChange) props.onTimeChange(newTime);
+      if (props.onTimeUpdate) props.onTimeUpdate(newTime);
     }
   };
 
@@ -218,7 +254,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
         var duration = await youtubePlayer.getDuration();
         setTime((currentTime / duration) * 100);
         setFormatedTime(formatTime(currentTime) + " / " + formatTime(duration));
-        props.onTimeUpdate(currentTime);
+        if (props.onTimeUpdate) props.onTimeUpdate(currentTime);
       }
     }, 500);
     return () => clearInterval(interval);
@@ -227,13 +263,13 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   //################## Handle fullscreen change ##################
 
   const fullscreenChanged = (state: boolean, _: FullScreenHandle) => {
-    if(state){
+    if (state) {
       let availWidth = size.width;
       let availHeight = size.height;
       let videoHeight = (availWidth / 16) * 9;
       let mgTop = (availHeight - videoHeight) / 2;
       setFullScreenMargin(mgTop);
-    }else{
+    } else {
       setFullScreenMargin(0);
     }
 
@@ -295,22 +331,36 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   //################## Handle youtube events ##################
 
   const _onStateChange = (event: any) => {
-    if (event.data === 0) {
-      props.onVideoFinished();
-    }
+    if(props.onStateChange) props.onStateChange(event.data);
   };
 
   const _onPlay = () => {
     setShowControls(true);
     setIsPlaying(true);
-    props.onPlay();
+    if (props.onPlay) props.onPlay();
   };
 
   const _onPause = () => {
     setShowControls(true);
     setIsPlaying(false);
-    props.onPause();
+    if (props.onPause) props.onPause();
   };
+
+  const _onEnd = (_: any) => {
+    if (props.onVideoFinished){
+      console.warn("DEPRECATION WARNING: onVideoFinished will be deprecated in further versions. Please use onEnd.");
+      props.onVideoFinished();
+    }
+    if (props.onEnd) props.onEnd();
+  }
+
+  const _onError = (event: any) => {
+    if (props.onError) props.onError(event.data);
+  }
+
+  const _onPlaybackQualityChange = (event: any) => {
+    if (props.onPlaybackQualityChange) props.onPlaybackQualityChange(event.data);
+  }
 
   /**
    * Handles the onPlaybackRateChange event of the YouTube player.
@@ -319,7 +369,7 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
     var youtubePlayer = (player as any).internalPlayer;
     let playBackRate = await youtubePlayer.getPlaybackRate();
 
-    props.onPlaybackRateChange(playBackRate);
+    if (props.onPlaybackRateChange) props.onPlaybackRateChange(playBackRate);
     setPlaybackRate(playBackRate);
   };
 
@@ -333,53 +383,21 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
   };
 
   const playbackRateOptions = () => {
-    //TODO: Use map
+    let steps = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+
     return (
       <div className="control-options">
         <h2>Speed</h2>
         <ul>
-          <li
-            onClick={() => changePlaybackRate(0.25)}
-            style={{ fontWeight: playbackRate == 0.25 ? "bold" : "initial" }}
-          >
-            0.25
-          </li>
-          <li
-            onClick={() => changePlaybackRate(0.5)}
-            style={{ fontWeight: playbackRate == 0.5 ? "bold" : "initial" }}
-          >
-            0.5
-          </li>
-          <li
-            onClick={() => changePlaybackRate(0.75)}
-            style={{ fontWeight: playbackRate == 0.75 ? "bold" : "initial" }}
-          >
-            0.75
-          </li>
-          <li
-            onClick={() => changePlaybackRate(1.0)}
-            style={{ fontWeight: playbackRate == 1.0 ? "bold" : "initial" }}
-          >
-            Standard
-          </li>
-          <li
-            onClick={() => changePlaybackRate(1.25)}
-            style={{ fontWeight: playbackRate == 1.25 ? "bold" : "initial" }}
-          >
-            1.25
-          </li>
-          <li
-            onClick={() => changePlaybackRate(1.5)}
-            style={{ fontWeight: playbackRate == 1.5 ? "bold" : "initial" }}
-          >
-            1.5
-          </li>
-          <li
-            onClick={() => changePlaybackRate(2.0)}
-            style={{ fontWeight: playbackRate == 2.0 ? "bold" : "initial" }}
-          >
-            2
-          </li>
+          {steps.map((value: number, index: number) => {
+            return (<li
+              key={index}
+              onClick={() => changePlaybackRate(value)}
+              style={{ fontWeight: playbackRate == value ? "bold" : "initial" }}
+            >
+              {value == 1.0 ? "Standard" : value}
+            </li>);
+          })}
         </ul>
       </div>
     );
@@ -423,14 +441,15 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
     height: "390",
     width: "640",
     playerVars: {
-      controls: 0,
-      playsinline: 1,
-      rel: 0,
-      modestbranding: 1,
-      autoplay: 1,
-      disablekb: 1,
-      showinfo: 0,
-      iv_load_policy: 3,
+      controls: props.options?.controls || 0,
+      playsinline: props.options?.playsinline || 1,
+      rel: props.options?.rel || 0,
+      modestbranding: props.options?.modestbranding || 1,
+      autoplay: props.options?.autoplay || 1,
+      disablekb: props.options?.disablekb || 1,
+      showinfo: props.options?.showinfo || 0,
+      iv_load_policy: props.options?.iv_load_policy || 3,
+      ...props.options,
     },
   };
 
@@ -438,15 +457,25 @@ const VideoPlayer: React.FC<Props> = (props: Props) => {
     <FullScreen handle={handle} onChange={fullscreenChanged}>
       <div className="videoPlayer">
         {MoveDetectors()}
-        <div className="video-container" style={{marginTop: fullScreenMargin}}>
+        <div
+          className="video-container"
+          style={{ marginTop: fullScreenMargin }}
+        >
           <YouTube
             videoId={props.videoId}
             opts={opts}
-            ref={(ref) => (player = ref)}
+            ref={(ref) => {
+              player = ref;
+              if (props.ytRef) props.ytRef(ref);
+            }}
             onPlay={_onPlay}
             onPause={_onPause}
             onStateChange={_onStateChange}
             onPlaybackRateChange={_onPlaybackRateChange}
+            onReady={props.onReady}
+            onEnd={_onEnd}
+            onError={_onError}
+            onPlaybackQualityChange={_onPlaybackQualityChange}
           />
         </div>
         {showControls && (
@@ -580,3 +609,4 @@ var formatTime = function (ins: number) {
 };
 
 export default VideoPlayer;
+export { YouTubeOptions, PlayerVars, YouTubeRef };
