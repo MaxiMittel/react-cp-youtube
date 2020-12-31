@@ -155,7 +155,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
 
   //TODO: Correct type
   const keyboardEvents = (event: any) => {
-    if(props.disableKb === true) return;
+    if(props.disableKb === true || event.target !== document.body) return;
+    
     switch (event.code) {
       case "Space":
         togglePlay(!isPlaying);
@@ -198,8 +199,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   };
 
   useEffect(() => {
-    document.addEventListener("keydown", keyboardEvents, false);
-    return () => document.removeEventListener("keydown", keyboardEvents, false);
+      document.addEventListener("keydown", keyboardEvents, false);
+      return () => document.removeEventListener("keydown", keyboardEvents, false);
   });
 
   //################## Other Functions ##################
@@ -259,6 +260,18 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
     }, 500);
     return () => clearInterval(interval);
   });
+
+  useEffect(() => {
+    const interval = setInterval(function(){
+      var elem = document.activeElement;
+      if(elem && elem.tagName == 'IFRAME'){
+          clearInterval(interval);
+          window.focus();
+          (elem as HTMLElement).blur();
+      }
+    }, 100);
+    return () => clearInterval(interval);
+  })
 
   //################## Handle fullscreen change ##################
 
