@@ -74,7 +74,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   const [volume, setVolume] = useState(100);
   const [formatedTime, setFormatedTime] = useState("0:00 / 0:00");
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(props.playing || true);
+  const [isPlaying, setIsPlaying] = useState((props.playing === undefined)? true : props.playing);
   const [showControls, setShowControls] = useState(true);
   const [hoverControls, setHoverControls] = useState(false);
   const [showPlaybackRateOptions, setShowPlaybackRateOptions] = useState(false);
@@ -105,19 +105,23 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   useEffect(() => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
-      youtubePlayer.cueVideoById(props.videoId, props.time || 0);
+      let startTime = 0;
+      if(props.time)
+        startTime = props.time;
+      
+      youtubePlayer.loadVideoById(props.videoId, startTime);
     }
   }, [props.videoId]);
 
-  const seekTime = async (time: number) =>{
+  const seekTime = async (time: number) => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
       var duration = await youtubePlayer.getDuration();
       let newTime = time;
 
-      if(newTime > duration){
+      if (newTime > duration) {
         newTime = duration;
-      }else if(newTime < 0){
+      } else if (newTime < 0) {
         newTime = 0;
       }
 
@@ -125,20 +129,25 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
       return newTime;
     }
     return 0;
-  }
+  };
 
   /**
    * Handle time change
    */
   useEffect(() => {
-    seekTime(props.time || 0);
+    if (player !== null) {
+      var youtubePlayer = (player as any).internalPlayer;
+      if (props.time !== undefined){
+        youtubePlayer.seekTo(props.time);
+      }
+    }
   }, [props.time]);
 
   /**
    * Handle playing change
    */
   useEffect(() => {
-    togglePlay(props.playing || true);
+    if (props.playing !== undefined) togglePlay(props.playing);
   }, [props.playing]);
 
   /**
@@ -147,7 +156,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   useEffect(() => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
-      youtubePlayer.setPlaybackRate(props.rate || 1);
+      if (props.playing !== undefined)
+        youtubePlayer.setPlaybackRate(props.rate);
     }
   }, [props.rate]);
 
@@ -155,10 +165,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
 
   //TODO: Correct type
   const keyboardEvents = (event: any) => {
-    if(props.disableKb === true || event.target !== document.body) return;
-    
+    if (props.disableKb === true || event.target !== document.body) return;
+
     event.preventDefault();
-    
+
     switch (event.code) {
       case "Space":
         togglePlay(!isPlaying);
@@ -201,8 +211,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   };
 
   useEffect(() => {
-      document.addEventListener("keydown", keyboardEvents, false);
-      return () => document.removeEventListener("keydown", keyboardEvents, false);
+    document.addEventListener("keydown", keyboardEvents, false);
+    return () => document.removeEventListener("keydown", keyboardEvents, false);
   });
 
   //################## Other Functions ##################
@@ -264,16 +274,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   });
 
   useEffect(() => {
-    const interval = setInterval(function(){
+    const interval = setInterval(function () {
       var elem = document.activeElement;
-      if(elem && elem.tagName == 'IFRAME'){
-          clearInterval(interval);
-          window.focus();
-          (elem as HTMLElement).blur();
+      if (elem && elem.tagName == "IFRAME") {
+        clearInterval(interval);
+        window.focus();
+        (elem as HTMLElement).blur();
       }
     }, 100);
     return () => clearInterval(interval);
-  })
+  });
 
   //################## Handle fullscreen change ##################
 
@@ -346,7 +356,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   //################## Handle youtube events ##################
 
   const _onStateChange = (event: any) => {
-    if(props.onStateChange) props.onStateChange(event.data);
+    if (props.onStateChange) props.onStateChange(event.data);
   };
 
   const _onPlay = () => {
@@ -362,20 +372,23 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   };
 
   const _onEnd = (_: any) => {
-    if (props.onVideoFinished){
-      console.warn("DEPRECATION WARNING: onVideoFinished will be deprecated in further versions. Please use onEnd.");
+    if (props.onVideoFinished) {
+      console.warn(
+        "DEPRECATION WARNING: onVideoFinished will be deprecated in further versions. Please use onEnd."
+      );
       props.onVideoFinished();
     }
     if (props.onEnd) props.onEnd();
-  }
+  };
 
   const _onError = (event: any) => {
     if (props.onError) props.onError(event.data);
-  }
+  };
 
   const _onPlaybackQualityChange = (event: any) => {
-    if (props.onPlaybackQualityChange) props.onPlaybackQualityChange(event.data);
-  }
+    if (props.onPlaybackQualityChange)
+      props.onPlaybackQualityChange(event.data);
+  };
 
   /**
    * Handles the onPlaybackRateChange event of the YouTube player.
@@ -405,13 +418,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
         <h2>Speed</h2>
         <ul>
           {steps.map((value: number, index: number) => {
-            return (<li
-              key={index}
-              onClick={() => changePlaybackRate(value)}
-              style={{ fontWeight: playbackRate == value ? "bold" : "initial" }}
-            >
-              {value == 1.0 ? "Standard" : value}
-            </li>);
+            return (
+              <li
+                key={index}
+                onClick={() => changePlaybackRate(value)}
+                style={{
+                  fontWeight: playbackRate == value ? "bold" : "initial",
+                }}
+              >
+                {value == 1.0 ? "Standard" : value}
+              </li>
+            );
           })}
         </ul>
       </div>
