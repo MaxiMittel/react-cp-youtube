@@ -157,6 +157,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   const keyboardEvents = (event: any) => {
     if(props.disableKb === true || event.target !== document.body) return;
     
+    event.preventDefault();
+    
     switch (event.code) {
       case "Space":
         togglePlay(!isPlaying);
