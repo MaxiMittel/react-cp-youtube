@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useEffect, useState, useRef } from "react";
+import { isMobile } from "react-device-detect";
 import "./styles/videoPlayer.css";
 import { ToggleButton } from "./ToggleButton";
 import {
@@ -19,6 +20,7 @@ import i_changeQuality from "./icons/changeQuality.svg";
 import i_changeQualitySolid from "./icons/changeQualitySolid.svg";
 import i_changePlaybackrate from "./icons/changePlaybackrate.svg";
 import i_changePlaybackrateSolid from "./icons/changePlaybackrateSolid.svg";
+import i_expand from "./icons/expand.svg";
 
 interface VideoPlayerProps {
   videoId: string;
@@ -385,6 +387,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
     if (props.onError) props.onError(event.data);
   };
 
+  const _onReady = (_: any) => {
+    if (props.onReady)
+        props.onReady();
+
+    if (player !== null) {
+        var youtubePlayer = (player as any).internalPlayer;
+        if(isPlaying){
+            youtubePlayer.playVideo();
+        }else{
+            youtubePlayer.pauseVideo();
+        }
+    }
+    
+};
+
   const _onPlaybackQualityChange = (event: any) => {
     if (props.onPlaybackQualityChange)
       props.onPlaybackQualityChange(event.data);
@@ -504,12 +521,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
             onPause={_onPause}
             onStateChange={_onStateChange}
             onPlaybackRateChange={_onPlaybackRateChange}
-            onReady={props.onReady}
+            onReady={_onReady}
             onEnd={_onEnd}
             onError={_onError}
             onPlaybackQualityChange={_onPlaybackQualityChange}
           />
         </div>
+        {!showControls && isMobile && (
+          <div onClick={() => setShowControls(true)} className="mobile-expand">
+            <img src={i_expand} alt="expand" className="mobile-expand-icon"/>
+          </div>
+        )}
         {showControls && (
           <div
             className="controls"
