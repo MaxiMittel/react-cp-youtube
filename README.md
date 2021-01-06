@@ -24,7 +24,7 @@ This React component wraps custom controls around a YouTube video for better inf
 
 ## Preview
 
-![preview](preview.png)
+![preview](preview.png#1)
 
 ## Install
 
