@@ -1,10 +1,10 @@
-.toggleButton{
-    height: 1em;
-    display: inline-block;
-    vertical-align: middle;
-    cursor: pointer;
+.toggleButton {
+  height: 1em;
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
 }
 
-.toggleButtonImage{
-    height: inherit;
+.toggleButtonImage {
+  height: inherit;
 }

@@ -1,22 +1,50 @@
-.custom-youtube-player-progress-bar-outer{
-    height: 5px;
-    background-color: #909090;
-    position: relative;
-    border-radius: 5px;
+.custom-youtube-player-progress-bar-outer {
+  height: 3px;
+  background-color: #909090;
+  position: relative;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
-.custom-youtube-player-progress-bar-inner{
-    height: 5px;
-    background-color: #e91e63;
-    border-radius: 5px;
+.custom-youtube-player-progress-bar-inner {
+  height: 3px;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
-.custom-youtube-player-progress-bar-knob{
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    position: absolute;
-    top: -6px;
-    background-color: white;
-    cursor: pointer;
+.custom-youtube-player-progress-bar-knob {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  position: absolute;
+  top: -5px;
+  cursor: pointer;
 }
+
+.custom-youtube-player-progress-bar-hidden-knob{
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+  position: absolute;
+  top: -17px;
+  cursor: pointer;
+}
+
+.hidden-mouse-tracker {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100000;
+}
+
+*.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+ }

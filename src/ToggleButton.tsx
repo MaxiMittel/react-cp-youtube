@@ -1,7 +1,6 @@
 import * as React from "react";
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import "./styles/toggleButton.css";
-
 
 interface Props {
   onToggle: (state: boolean) => void;
@@ -26,7 +25,11 @@ export const ToggleButton: React.FC<Props> = (props: Props) => {
 
   return (
     <div onClick={toggle} className="toggleButton" style={props.style}>
-      <img src={state ? props.onImage : props.offImage} alt="toggleButton" className="toggleButtonImage"/>
+      <img
+        src={state ? props.onImage : props.offImage}
+        alt="toggleButton"
+        className="toggleButtonImage"
+      />
     </div>
   );
 };

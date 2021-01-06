@@ -12,15 +12,16 @@ import YouTube, { Options, PlayerVars } from "react-youtube";
 import { VideoProgress } from "./VideoProgress";
 import useWindowSize from "./windowSize";
 
-import playButton from "./icons/playButton.svg";
-import pauseButton from "./icons/pauseButton.svg";
-import enterFullscreen from "./icons/enterFullscreen.svg";
-import leaveFullscreen from "./icons/leaveFullscreen.svg";
-import i_changeQuality from "./icons/changeQuality.svg";
-import i_changeQualitySolid from "./icons/changeQualitySolid.svg";
-import i_changePlaybackrate from "./icons/changePlaybackrate.svg";
-import i_changePlaybackrateSolid from "./icons/changePlaybackrateSolid.svg";
-import i_expand from "./icons/expand.svg";
+import cog_solid from "./icons/cog-solid.svg";
+import compress_solid from "./icons/compress-solid.svg";
+import expand_solid from "./icons/expand-solid.svg";
+import forward_solid from "./icons/forward-solid.svg";
+import pause_solid from "./icons/pause-solid.svg";
+import play_solid from "./icons/play-solid.svg";
+import chevron_up_solid from "./icons/chevron-up-solid.svg";
+import volume_mute_solid from "./icons/volume-mute-solid.svg";
+import volume_up_solid from "./icons/volume-up-solid.svg";
+import volume_down_solid from "./icons/volume-down-solid.svg";
 
 interface VideoPlayerProps {
   videoId: string;
@@ -76,7 +77,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   const [volume, setVolume] = useState(100);
   const [formatedTime, setFormatedTime] = useState("0:00 / 0:00");
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [isPlaying, setIsPlaying] = useState((props.playing === undefined)? true : props.playing);
+  const [isPlaying, setIsPlaying] = useState(
+    props.playing === undefined ? true : props.playing
+  );
   const [showControls, setShowControls] = useState(true);
   const [hoverControls, setHoverControls] = useState(false);
   const [showPlaybackRateOptions, setShowPlaybackRateOptions] = useState(false);
@@ -86,6 +89,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   const [fullScreenMargin, setFullScreenMargin] = useState(0);
   const timeoutRef = useRef<any>(null);
   const size = useWindowSize();
+  const [showVolume, setShowVolume] = useState(false);
+  const video_container = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isFullscreen) {
@@ -108,9 +113,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
       let startTime = 0;
-      if(props.time)
-        startTime = props.time;
-      
+      if (props.time) startTime = props.time;
+
       youtubePlayer.loadVideoById(props.videoId, startTime);
     }
   }, [props.videoId]);
@@ -139,7 +143,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   useEffect(() => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
-      if (props.time !== undefined){
+      if (props.time !== undefined) {
         youtubePlayer.seekTo(props.time);
       }
     }
@@ -352,7 +356,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
     timeoutRef.current = setTimeout(() => {
       timeoutRef.current = null;
       setShowControls(false);
-    }, 5000);
+    }, 50000000);
   }, [showControls, hoverControls]);
 
   //################## Handle youtube events ##################
@@ -388,19 +392,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   };
 
   const _onReady = (_: any) => {
-    if (props.onReady)
-        props.onReady();
+    if (props.onReady) props.onReady();
 
     if (player !== null) {
-        var youtubePlayer = (player as any).internalPlayer;
-        if(isPlaying){
-            youtubePlayer.playVideo();
-        }else{
-            youtubePlayer.pauseVideo();
-        }
+      var youtubePlayer = (player as any).internalPlayer;
+      if (isPlaying) {
+        youtubePlayer.playVideo();
+      } else {
+        youtubePlayer.pauseVideo();
+      }
     }
-    
-};
+  };
 
   const _onPlaybackQualityChange = (event: any) => {
     if (props.onPlaybackQualityChange)
@@ -431,7 +433,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
     let steps = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
 
     return (
-      <div className="control-options">
+      <div className="control-options" style={{maxHeight: getVideoContainerHeight()*0.8}}>
         <h2>Speed</h2>
         <ul>
           {steps.map((value: number, index: number) => {
@@ -471,13 +473,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   const qualityOptions = () => {
     requestQualityLevels();
     return (
-      <div className="control-options">
+      <div className="control-options" style={{maxHeight: getVideoContainerHeight()*0.8}}>
         <h2>Quality</h2>
         <ul>
           {qualityLevels.map(function (level: string, i: number) {
             return (
               <li onClick={() => changeQuality(level)} key={i}>
-                {level}
+                {mapQuality(level)}
               </li>
             );
           })}
@@ -485,6 +487,29 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
       </div>
     );
   };
+
+  const getVideoContainerHeight = () =>{
+    let bounds = video_container.current?.getBoundingClientRect();
+    if (bounds) {
+      return bounds.height;
+    }
+
+    return 200;
+  }
+
+  // ############# Volume expand ##############
+
+  const enterVolumeArea = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setShowVolume(true);
+  };
+
+  const leaveVolumeArea = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setShowVolume(false);
+  };
+
+  // ############# Volume expand end ##########
 
   const opts: Options = {
     height: "390",
@@ -509,6 +534,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
         <div
           className="video-container"
           style={{ marginTop: fullScreenMargin }}
+          ref={video_container}
         >
           <YouTube
             videoId={props.videoId}
@@ -529,7 +555,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
         </div>
         {!showControls && isMobile && (
           <div onClick={() => setShowControls(true)} className="mobile-expand">
-            <img src={i_expand} alt="expand" className="mobile-expand-icon"/>
+            <img
+              src={chevron_up_solid}
+              alt="expand"
+              className="mobile-expand-icon"
+            />
           </div>
         )}
         {showControls && (
@@ -542,85 +572,115 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
               {showPlaybackRateOptions && playbackRateOptions()}
               {showQualityOptions && qualityOptions()}
             </div>
-            <div className="controlRow1">
-              <VideoProgress
-                value={time}
-                min={0}
-                max={100}
-                onChange={handleTimeChange}
-                onInput={handleTimeInput}
-              />
-            </div>
-            <div className="controlRow2">
-              <ToggleButton
-                style={{ marginRight: "0.5em", width: "1em" }}
-                onToggle={togglePlay}
-                onImage={pauseButton}
-                offImage={playButton}
-                value={isPlaying}
-              />
-              <div
-                style={{
-                  width: "4em",
-                  display: "inline-block",
-                  verticalAlign: "middle",
-                  marginLeft: "1em",
-                  marginRight: "1em",
-                }}
-              >
+            <div className="control-shadow">
+              <div className="controlRow1">
                 <VideoProgress
-                  value={volume}
+                  value={time}
                   min={0}
                   max={100}
-                  onChange={volumeOnChange}
-                  onInput={volumeOnChange}
+                  color="#ff0000"
+                  onChange={handleTimeChange}
+                  onInput={handleTimeInput}
                 />
               </div>
-              <span className="timeInfo">{formatedTime}</span>
-              <div style={{ float: "right" }}>
+              <div className="controlRow2">
                 <ToggleButton
-                  style={{ marginRight: "1em" }}
-                  onToggle={(s: boolean) => {
-                    if (s) {
-                      setShowQualityOptions(false);
-                      setShowPlaybackRateOptions(true);
-                    } else {
-                      setShowQualityOptions(false);
-                      setShowPlaybackRateOptions(false);
-                    }
-                  }}
-                  onImage={i_changePlaybackrateSolid}
-                  offImage={i_changePlaybackrate}
-                  value={showPlaybackRateOptions}
+                  style={{ marginRight: "0.5em", width: "1em" }}
+                  onToggle={togglePlay}
+                  onImage={pause_solid}
+                  offImage={play_solid}
+                  value={isPlaying}
                 />
-                <ToggleButton
-                  style={{ marginRight: "1em" }}
-                  onToggle={(s: boolean) => {
-                    if (s) {
-                      setShowPlaybackRateOptions(false);
-                      setShowQualityOptions(true);
-                    } else {
-                      setShowPlaybackRateOptions(false);
-                      setShowQualityOptions(false);
+                <div
+                  className="volume-container"
+                  onMouseEnter={enterVolumeArea}
+                  onMouseLeave={leaveVolumeArea}
+                >
+                  <ToggleButton
+                    style={{ width: "1em" }}
+                    onToggle={() => console.log("")}
+                    onImage={
+                      volume == 0
+                        ? volume_mute_solid
+                        : volume < 50
+                        ? volume_down_solid
+                        : volume_up_solid
                     }
-                  }}
-                  onImage={i_changeQualitySolid}
-                  offImage={i_changeQuality}
-                  value={showQualityOptions}
-                />
-                <ToggleButton
-                  style={{}}
-                  onToggle={(s: boolean) => {
-                    if (s) {
-                      handle.enter();
-                    } else {
-                      handle.exit();
+                    offImage={
+                      volume == 0
+                        ? volume_mute_solid
+                        : volume < 50
+                        ? volume_down_solid
+                        : volume_up_solid
                     }
-                  }}
-                  onImage={leaveFullscreen}
-                  offImage={enterFullscreen}
-                  value={isFullscreen}
-                />
+                    value={isPlaying}
+                  />
+                  {showVolume && (
+                    <div
+                      style={{
+                        width: "4em",
+                        display: "inline-block",
+                        verticalAlign: "middle",
+                        marginLeft: "1em",
+                      }}
+                    >
+                      <VideoProgress
+                        value={volume}
+                        min={0}
+                        max={100}
+                        color="white"
+                        onChange={volumeOnChange}
+                        onInput={volumeOnChange}
+                      />
+                    </div>
+                  )}
+                </div>
+                <span className="timeInfo">{formatedTime}</span>
+                <div style={{ float: "right" }}>
+                  <ToggleButton
+                    style={{ marginRight: "1em" }}
+                    onToggle={(s: boolean) => {
+                      if (s) {
+                        setShowQualityOptions(false);
+                        setShowPlaybackRateOptions(true);
+                      } else {
+                        setShowQualityOptions(false);
+                        setShowPlaybackRateOptions(false);
+                      }
+                    }}
+                    onImage={forward_solid}
+                    offImage={forward_solid}
+                    value={showPlaybackRateOptions}
+                  />
+                  <ToggleButton
+                    style={{ marginRight: "1em" }}
+                    onToggle={(s: boolean) => {
+                      if (s) {
+                        setShowPlaybackRateOptions(false);
+                        setShowQualityOptions(true);
+                      } else {
+                        setShowPlaybackRateOptions(false);
+                        setShowQualityOptions(false);
+                      }
+                    }}
+                    onImage={cog_solid}
+                    offImage={cog_solid}
+                    value={showQualityOptions}
+                  />
+                  <ToggleButton
+                    style={{}}
+                    onToggle={(s: boolean) => {
+                      if (s) {
+                        handle.enter();
+                      } else {
+                        handle.exit();
+                      }
+                    }}
+                    onImage={compress_solid}
+                    offImage={expand_solid}
+                    value={isFullscreen}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -659,7 +719,45 @@ var formatTime = function (ins: number) {
   } else {
     seconds_str = "" + seconds;
   }
+
+  if(isNaN(hours)){
+    hours_str = "00";
+  }
+
+  if(isNaN(minutes)){
+    minutes_str = "00";
+  }
+
+  if(isNaN(seconds)){
+    seconds_str = "00";
+  }
+  
   return (hours !== 0 ? hours_str + ":" : "") + minutes_str + ":" + seconds_str;
+};
+
+var mapQuality = (quality: string) => {
+  switch (quality) {
+    case "tiny":
+      return "144p";
+    case "small":
+      return "240p";
+    case "medium":
+      return "320p";
+    case "large":
+      return "480p";
+    case "hd720":
+      return "720p";
+    case "hd1080":
+      return "1080p";
+    case "hd1440":
+      return "1440p";
+    case "hd2160":
+      return "2160p";
+    case "hd4320":
+      return "4320p";
+    default:
+      return quality;
+  }
 };
 
 export default VideoPlayer;

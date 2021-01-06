@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="438px" height="266px" viewBox="0 0 438 266" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>chevron-up-solid</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="chevron-up-solid" fill="#FFFFFF" fill-rule="nonzero">
+            <path d="M235.971,7.524 L430.314,201.867 C439.687,211.24 439.687,226.436 430.314,235.808 L407.647,258.475 C398.29,267.832 383.125,267.85 373.746,258.515 L219,104.495 L64.255,258.516 C54.876,267.851 39.711,267.833 30.354,258.476 L7.687,235.809 C-1.686,226.436 -1.686,211.24 7.687,201.868 L202.03,7.525 C211.402,-1.848 226.598,-1.848 235.971,7.524 Z" id="Path"></path>
+        </g>
+    </g>
+</svg>

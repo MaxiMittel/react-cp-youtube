@@ -42,76 +42,71 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20px;
   color: white;
-  background: rgb(0, 0, 0);
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 1),
-    rgba(0, 0, 0, 1) 13%,
-    rgba(0, 0, 0, 0)
-  );
   z-index: 5000;
 }
 
-.controlRow0{
+.controlRow0 {
   text-align: right;
 }
 
 .controlRow2 {
   box-sizing: border-box;
-  padding-bottom: 0.5em;
+  padding-bottom: 0em;
   padding-left: 1em;
   padding-right: 1em;
-  padding-top: 1em;
+  padding-top: 0.6em;
   text-align: left;
 }
 
 .timeInfo {
-  font-size: 1em;
+  font-size: 0.8em;
   color: white;
-  font-weight: bold;
+  font-weight: 500;
 }
 
-.control-options{
-  background-color: rgba(0,0,0,0.5);
+.control-options {
+  background-color: rgb(35 35 35 / 75%);
+  -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   display: inline-block;
-  text-align: right;
-  border-radius: 5px;
-  min-width: 100px;
+  text-align: left;
+  min-width: 150px;
   padding: 1em;
+  margin: 1em;
+  overflow-y: auto;
+  max-height: 200px;
+  margin-bottom: 0;
 }
 
-.control-options h2{
+.control-options h2 {
   margin: 0;
   font-size: 1em;
   padding-bottom: 0.5em;
-  border-bottom: .5px solid #7b7b7b;
+  border-bottom: 0.5px solid #7b7b7b;
   text-align: left;
 }
 
-.control-options ul{
+.control-options ul {
   list-style: none;
   padding: 0;
   margin: 0.2em;
 }
 
-.control-options li{
+.control-options li {
   padding: 0.4em;
   padding-top: 0.3em;
   padding-bottom: 0.3em;
   margin-bottom: 0.2em;
-  border-radius: 5px;
   cursor: pointer;
 }
 
-.control-options li:hover{
-  background-color: rgba(255,255,255,0.2);
+.control-options li:hover {
+  background-color: rgb(0 0 0 / 20%);
 }
 
-.mobile-expand{
-  background-color: rgba(0,0,0,0.5);
+.mobile-expand {
+  background-color: rgba(0, 0, 0, 0.5);
   -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   position: absolute;
@@ -127,6 +122,23 @@
   cursor: pointer;
 }
 
-.mobile-expand-icon{
+.mobile-expand-icon {
   height: 0.7em;
+}
+
+.volume-container {
+  display: inline-block;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.control-shadow {
+  background: rgba(0, 0, 0, 0.5);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.8) 13%,
+    rgba(0, 0, 0, 0)
+  );
+  padding: 20px;
 }
