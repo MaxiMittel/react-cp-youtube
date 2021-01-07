@@ -22,6 +22,7 @@ import chevron_up_solid from "./icons/chevron-up-solid.svg";
 import volume_mute_solid from "./icons/volume-mute-solid.svg";
 import volume_up_solid from "./icons/volume-up-solid.svg";
 import volume_down_solid from "./icons/volume-down-solid.svg";
+import { Icon } from "./Icon";
 
 interface VideoPlayerProps {
   videoId: string;
@@ -261,6 +262,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
       var youtubePlayer = (player as any).internalPlayer;
       var duration = await youtubePlayer.getDuration();
       youtubePlayer.seekTo((val / 100) * duration);
+      setTime((val / 100) * duration);
+      setFormatedTime(formatTime((val / 100) * duration) + " / " + formatTime(duration));
     }
   };
 
@@ -356,7 +359,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
     timeoutRef.current = setTimeout(() => {
       timeoutRef.current = null;
       setShowControls(false);
-    }, 50000000);
+    }, 5000);
   }, [showControls, hoverControls]);
 
   //################## Handle youtube events ##################
@@ -596,26 +599,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
                   onMouseEnter={enterVolumeArea}
                   onMouseLeave={leaveVolumeArea}
                 >
-                  <ToggleButton
+                  <Icon
                     style={{ width: "1em" }}
-                    onToggle={() => console.log("")}
-                    onImage={
+                    icon={
                       volume == 0
                         ? volume_mute_solid
                         : volume < 50
                         ? volume_down_solid
                         : volume_up_solid
                     }
-                    offImage={
-                      volume == 0
-                        ? volume_mute_solid
-                        : volume < 50
-                        ? volume_down_solid
-                        : volume_up_solid
-                    }
-                    value={isPlaying}
                   />
-                  {showVolume && (
+                  {(showVolume || isMobile) && (
                     <div
                       style={{
                         width: "4em",

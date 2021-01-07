@@ -133,12 +133,14 @@
 }
 
 .control-shadow {
-  background: rgba(0, 0, 0, 0.5);
   background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.5),
-    rgba(0, 0, 0, 0.8) 13%,
-    rgba(0, 0, 0, 0)
+    0deg,
+    rgb(0 0 0 / 0.7) 0%,
+    rgba(0, 0, 0, 0) 100%
   );
   padding: 20px;
+}
+
+.fullscreen{
+  background-color: black;
 }
