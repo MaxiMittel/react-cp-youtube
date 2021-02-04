@@ -144,3 +144,55 @@
 .fullscreen{
   background-color: black;
 }
+
+.mobile-settings{
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 80%;
+  top: 20%;
+  z-index: 90000;
+  margin: auto;
+  background-color: #0e0c0c;
+  box-shadow: 0 0 34px 4px #00000096;
+  border: none;
+  border-radius: 20px;
+  padding: 2em;
+  box-sizing: border-box;
+  color: white;
+}
+
+.mobile-settings-close{
+  background-color: #292324;
+  border: none;
+  color: white;
+  position: absolute;
+  right: 2em;
+  top: 2em;
+  font-size: 0.6em;
+  padding: 1em;
+  border-radius: 50%;
+}
+
+.mobile-settings hr{
+  border: .5px solid #292525;
+}
+
+.mobile-settings h2{
+  font-size: 1.4em;
+    margin: 0;
+    margin-left: 0.2em;
+    margin-top: 1em;
+}
+
+.mobile-settings select{
+  width: 100%;
+    padding: 0.8em;
+    box-sizing: border-box;
+    background-color: #282323;
+    color: white;
+    font-weight: bold;
+    border: 1px solid #282323;
+    box-sizing: border-box;
+    -webkit-appearance: none
+}
