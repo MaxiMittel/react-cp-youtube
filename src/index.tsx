@@ -239,10 +239,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
   const volumeOnChange = async (val: number) => {
     if (player !== null) {
       var youtubePlayer = (player as any).internalPlayer;
-      
-      if(val == 0){
+
+      if (val == 0) {
         youtubePlayer.mute();
-      }else if(youtubePlayer.isMuted()){
+      } else if (youtubePlayer.isMuted()) {
         youtubePlayer.unMute();
       }
 
@@ -698,49 +698,51 @@ const VideoPlayer: React.FC<VideoPlayerProps> = (props: VideoPlayerProps) => {
           </div>
         )}
         {showMobileSettings && (
-          <div className="mobile-settings">
-            <Icon
-              icon={times_solid}
-              onClick={() => setShowMobileSettings(false)}
-              className="mobile-settings-close"
-            />
-            <h2>Volume</h2>
-            <hr />
-            <VolumeControl
-              volume={volume}
-              onVolumeChange={volumeOnChange}
-              alwayShow={true}
-            />
-            <h2>Quality</h2>
-            <hr />
-            <select onChange={() => changeQuality("")}>
-              {qualityLevels.map(function (level: string, i: number) {
-                return (
-                  <option key={i} value={level}>
-                    {mapQuality(level)}
-                  </option>
-                );
-              })}
-            </select>
-            <h2>Playbackrate</h2>
-            <hr />
-            <select
-              value={playbackRate}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                changePlaybackRate(parseFloat(e.target.value));
-              }}
-            >
-              {[0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0].map(function (
-                rate: number,
-                i: number
-              ) {
-                return (
-                  <option key={i} value={rate}>
-                    {rate == 1.0 ? "Standard" : rate}
-                  </option>
-                );
-              })}
-            </select>
+          <div className="mobile-settings-background">
+            <div className="mobile-settings">
+              <Icon
+                icon={times_solid}
+                onClick={() => setShowMobileSettings(false)}
+                className="mobile-settings-close"
+              />
+              <h2>Volume</h2>
+              <hr />
+              <VolumeControl
+                volume={volume}
+                onVolumeChange={volumeOnChange}
+                alwayShow={true}
+              />
+              <h2>Quality</h2>
+              <hr />
+              <select onChange={() => changeQuality("")}>
+                {qualityLevels.map(function (level: string, i: number) {
+                  return (
+                    <option key={i} value={level}>
+                      {mapQuality(level)}
+                    </option>
+                  );
+                })}
+              </select>
+              <h2>Playbackrate</h2>
+              <hr />
+              <select
+                value={playbackRate}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  changePlaybackRate(parseFloat(e.target.value));
+                }}
+              >
+                {[0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0].map(function (
+                  rate: number,
+                  i: number
+                ) {
+                  return (
+                    <option key={i} value={rate}>
+                      {rate == 1.0 ? "Standard" : rate}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
           </div>
         )}
       </div>
